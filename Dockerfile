@@ -1,8 +1,6 @@
 FROM ubuntu:18.04
 RUN apt update && apt upgrade -y
 
-# Installing fail2ban
-
 RUN apt install curl -y && apt install gnupg2 tzdata -y
 RUN echo "Australia/Adelaide" |  tee /etc/timezone
 RUN curl -sL https://deb.nodesource.com/setup_8.x | bash -
@@ -28,6 +26,3 @@ RUN echo 'eval "$(rbenv init -)"' >> ~/.bashrc
 RUN git clone https://github.com/rbenv/ruby-build.git ~/.rbenv/plugins/ruby-build
 RUN RUBY_CONFIGURE_OPTS=--with-jemalloc rbenv install 2.5.3
 RUN rbenv global 2.5.3
-#RUN gem install bundler --no-ri --no-rdoc
-#USER root
-
