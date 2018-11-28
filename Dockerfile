@@ -44,3 +44,4 @@ RUN cp /live/dist/mastodon-*.service /etc/systemd/system/
 #RUN service mastodon-web  restart  && systemctl enable mastodon-*
 RUN useradd appbox
 USER appbox
+EXPOSE 80
