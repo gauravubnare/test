@@ -42,3 +42,5 @@ RUN sudo cp /live/dist/nginx.conf /etc/nginx/sites-available/mastodon && sudo ln
 RUN service  nginx reload
 RUN cp /live/dist/mastodon-*.service /etc/systemd/system/
 #RUN service mastodon-web  restart  && systemctl enable mastodon-*
+RUN useradd appbox
+USER appbox
