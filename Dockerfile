@@ -31,10 +31,6 @@ RUN service postgresql start;
 RUN sed -i '21imastodon  ALL=(ALL:ALL)  NOPASSWD: ALL' /etc/sudoers
 USER mastodon
 RUN sudo service postgresql restart;sudo -u postgres psql -c "CREATE USER mastodon CREATEDB;"
-
-#RUN sudo -u postgres psql -c "CREATE USER mastodon CREATEDB;
-#<F9>RUN sudo apt-get install ruby-dev  ruby2.0-dev ruby2.2-dev  ruby2.3-dev -y
-#USER mastodon
 RUN sudo git clone https://github.com/tootsuite/mastodon.git live && cd live && sudo gem install bundler && sudo setfacl -m d:u:mastodon:rwx /live/ && sudo chown -R mastodon:mastodon /live 
 # RAILS_ENV=production bundle exec rake mastodon:setup
 USER root
