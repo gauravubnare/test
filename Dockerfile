@@ -10,12 +10,12 @@ RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
 RUN echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list
 
 RUN apt install -y \
-  imagemagick ffmpeg libpq-dev libxml2-dev libxslt1-dev file git-core \
+   imagemagick ffmpeg libpq-dev libxml2-dev libxslt1-dev file git-core \
   g++ libprotobuf-dev protobuf-compiler pkg-config nodejs gcc autoconf \
   bison build-essential libssl-dev libyaml-dev libreadline6-dev \
   zlib1g-dev libncurses5-dev libffi-dev libgdbm5 libgdbm-dev \
   nginx redis-server redis-tools postgresql postgresql-contrib \
-  certbot yarn libidn11-dev libicu-dev libjemalloc-dev rbenv
+  vim certbot acl yarn libidn11-dev libicu-dev libjemalloc-dev rbenv sudo
 
 RUN adduser --disabled-login mastodon
 USER mastodon
@@ -26,3 +26,19 @@ RUN echo 'eval "$(rbenv init -)"' >> ~/.bashrc
 RUN git clone https://github.com/rbenv/ruby-build.git ~/.rbenv/plugins/ruby-build
 RUN RUBY_CONFIGURE_OPTS=--with-jemalloc rbenv install 2.5.3
 RUN rbenv global 2.5.3
+USER root
+RUN service postgresql start;
+RUN sed -i '21imastodon  ALL=(ALL:ALL)  NOPASSWD: ALL' /etc/sudoers
+USER mastodon
+RUN sudo service postgresql restart;sudo -u postgres psql -c "CREATE USER mastodon CREATEDB;"
+
+#RUN sudo -u postgres psql -c "CREATE USER mastodon CREATEDB;
+#<F9>RUN sudo apt-get install ruby-dev  ruby2.0-dev ruby2.2-dev  ruby2.3-dev -y
+#USER mastodon
+RUN sudo git clone https://github.com/tootsuite/mastodon.git live && cd live && sudo gem install bundler && sudo setfacl -m d:u:mastodon:rwx /live/ && sudo chown -R mastodon:mastodon /live 
+# RAILS_ENV=production bundle exec rake mastodon:setup
+USER root
+RUN sudo cp /live/dist/nginx.conf /etc/nginx/sites-available/mastodon && sudo ln -s /etc/nginx/sites-available/mastodon /etc/nginx/sites-enabled/mastodon
+RUN service  nginx reload
+RUN cp /live/dist/mastodon-*.service /etc/systemd/system/
+#RUN service mastodon-web  restart  && systemctl enable mastodon-*
